@@ -234,3 +234,134 @@ let a;
 let x = 10;
 let x = 20; // 错误，不能在1个作用域里多次声明`x`
 ```
+块级作用域变量的获取<br/>
+
+不仅是在循环里引入了一个新的变量环境，而是针对 每次迭代都会创建这样一个新作用域。 这就是我们在使用立即执行的函数表达式时做的事
+```
+for (let i = 0; i < 10 ; i++) {
+    setTimeout(function() {console.log(i); }, 100 * i);
+}
+//0
+//1
+//2
+//3
+//4
+//5
+//6
+//7
+//8
+//9
+```
+ ### const 声明
+ 拥有与 let相同的作用域规则，但是不能对它们重新赋值
+ ```
+ const age = 23;
+age = 24;//Cannot assign to 'age' because it is a constant or a read-only property.
+const people = {
+    name:'xiaoming',
+    age:18
+}
+//除非你使用特殊的方法去避免，实际上const变量的内部状态是可修改的
+people.age = 20;//{ name: 'xiaoming', age: 20 }
+console.log(people)
+people = {
+    name:'lily',
+    age:19
+}//Cannot assign to 'people' because it is a constant or a read-only property.
+people.sex = 'woman'//Property 'sex' does not exist on type '{ name: string; age: number; }'.
+
+ ```
+<!-- ### 解构-->
+<!-- 解构数组-->
+<!-- ```-->
+<!-- let arry = [1, 2];-->
+<!-- let [first, second] = arry;//first 1 second 2-->
+<!-- let [first, ...rest] = [1, 2, 3, 4];//first 1 rest [2,3,4]-->
+<!-- ```-->
+<!-- 对象解构-->
+<!-- ```-->
+<!-- let o = {-->
+<!--    a: "foo",-->
+<!--    b: 12,-->
+<!--    c: "bar"-->
+<!--};-->
+<!--let { a, b } = o;-->
+<!--console.log(a,b)//"foo" 12-->
+<!-- ```-->
+## 接口
+TypeScript的核心原则之一是对值所具有的结构进行类型检查。 它有时被称做“鸭式辨型法”或“结构性子类型化”。（鸭式辨型来自于James Whitecomb Riley的名言："像鸭子一样走路并且嘎嘎叫的就叫鸭子。"通过制定规则来判定对象是否实现这个接口。）
+```
+interface LabelledValue {
+  label: string;
+}
+
+function printLabel(labelledObj: LabelledValue) {
+  console.log(labelledObj.label);
+}
+
+let myObj = {size: 10, label: "Size 10 Object"};
+printLabel(myObj);
+```
+接口就好比一个名字，用来描述上面例子里的要求。
+### 可选属性
+接口里的属性不全都是必需的。 有些是只在某些条件下存在，或者根本不存在。
+```
+interface SquareConfig {
+  color?: string;
+  width?: number;
+}
+
+function createSquare(config: SquareConfig): {color: string; area: number} {
+  let newSquare = {color: "white", area: 100};
+  if (config.color) {
+    newSquare.color = config.color;
+  }
+  if (config.width) {
+    newSquare.area = config.width * config.width;
+  }
+  return newSquare;
+}
+
+let mySquare = createSquare({color: "black"});
+```
+### 只读属性
+```
+interface Point {
+    readonly x: number;
+    readonly y: number;
+}
+let p1: Point = { x: 10, y: 20 };
+p1.x = 5; // error!
+```
+### 额外属性
+```
+interface SquareConfig {
+    color?: string;
+    width?: number;
+    [propName: string]: any;
+}
+let squareOptions = { colour: "red", width: 100 };
+let mySquare = createSquare(squareOptions);
+```
+### 函数类型
+```
+interface SearchFunc {
+  (source: string, subString: string): boolean;
+}
+let mySearch: SearchFunc;
+mySearch = function(source: string, subString: string) {
+  let result = source.search(subString);
+  return result > -1;
+}
+```
+### 可索引的类型
+```
+interface StringArray {
+  [index: number]: string;
+}
+
+let myArray: StringArray;
+myArray = ["Bob", "Fred"];
+
+let myStr: string = myArray[0];
+```
